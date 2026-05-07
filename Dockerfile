@@ -36,14 +36,11 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy composer files
-COPY composer.json composer.lock ./
+# Copy ALL Laravel files
+COPY . .
 
 # Install Laravel dependencies
 RUN composer install --no-dev --optimize-autoloader
-
-# Copy application files
-COPY . .
 
 # Laravel optimization
 RUN php artisan config:clear || true
