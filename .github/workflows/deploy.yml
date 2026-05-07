@@ -1,0 +1,51 @@
+name: Deploy to ECS
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  AWS_REGION: ap-southeast-2
+  ECR_REPOSITORY: sipus-app
+  ECS_SERVICE: sipus-service
+  ECS_CLUSTER: sipus-cluster
+  ECS_TASK_DEFINITION: sipus-task
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build Docker image
+        run: |
+          docker build -t $ECR_REPOSITORY .
+
+      - name: Tag Docker image
+        run: |
+          docker tag $ECR_REPOSITORY:latest 640759203549.dkr.ecr.ap-southeast-2.amazonaws.com/$ECR_REPOSITORY:latest
+
+      - name: Push Docker image to ECR
+        run: |
+          docker push 640759203549.dkr.ecr.ap-southeast-2.amazonaws.com/$ECR_REPOSITORY:latest
+
+      - name: Force ECS deployment
+        run: |
+          aws ecs update-service \
+            --cluster $ECS_CLUSTER \
+            --service $ECS_SERVICE \
+            --force-new-deployment
