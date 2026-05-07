@@ -1,7 +1,7 @@
 # =========================
 # BUILD STAGE
 # =========================
-FROM php:8.3-fpm AS builder
+FROM php:8.5-fpm AS builder
 
 WORKDIR /app
 
@@ -52,7 +52,7 @@ RUN php artisan cache:clear || true
 # =========================
 # PRODUCTION STAGE
 # =========================
-FROM php:8.3-fpm
+FROM php:8.5-fpm
 
 WORKDIR /var/www/html
 
@@ -92,4 +92,4 @@ RUN chown -R www-data:www-data /var/www/html/bootstrap/cache
 EXPOSE 80
 
 # Run Laravel
-CMD php artisan serve --host=0.0.0.0 --port=80
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=80"]
