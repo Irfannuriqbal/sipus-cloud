@@ -1,0 +1,95 @@
+version: "3.9"
+
+services:
+    # MySQL Database
+    mysql:
+        image: mysql:8.0
+        container_name: sipus_mysql
+        environment:
+            MYSQL_DATABASE: sipus
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_PASSWORD: password
+            MYSQL_USER: sipus
+        ports:
+            - "3306:3306"
+        volumes:
+            - mysql_data:/var/lib/mysql
+        networks:
+            - sipus_network
+        healthcheck:
+            test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+    # Laravel Application
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: sipus_app
+        working_dir: /app
+        environment:
+            APP_NAME: SIPUS
+            APP_ENV: ${APP_ENV:-local}
+            APP_DEBUG: ${APP_DEBUG:-true}
+            APP_URL: ${APP_URL:-http://localhost}
+            DB_HOST: mysql
+            DB_PORT: 3306
+            DB_DATABASE: sipus
+            DB_USERNAME: sipus
+            DB_PASSWORD: password
+            CACHE_DRIVER: database
+            QUEUE_CONNECTION: database
+            SESSION_DRIVER: database
+        depends_on:
+            mysql:
+                condition: service_healthy
+        ports:
+            - "80:80"
+        volumes:
+            - .:/app
+            - /app/node_modules
+            - /app/vendor
+        networks:
+            - sipus_network
+        command: >
+            sh -c "php artisan migrate --force &&
+                   php artisan storage:link &&
+                   supervisord -c /etc/supervisor/conf.d/supervisord.conf"
+
+    # PHP-CLI for running commands
+    cli:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: sipus_cli
+        working_dir: /app
+        environment:
+            APP_NAME: SIPUS
+            APP_ENV: ${APP_ENV:-local}
+            APP_DEBUG: ${APP_DEBUG:-true}
+            APP_URL: ${APP_URL:-http://localhost}
+            DB_HOST: mysql
+            DB_PORT: 3306
+            DB_DATABASE: sipus
+            DB_USERNAME: sipus
+            DB_PASSWORD: password
+        depends_on:
+            - mysql
+            - app
+        volumes:
+            - .:/app
+            - /app/node_modules
+            - /app/vendor
+        networks:
+            - sipus_network
+        command: tail -f /dev/null
+
+volumes:
+    mysql_data:
+        driver: local
+
+networks:
+    sipus_network:
+        driver: bridge

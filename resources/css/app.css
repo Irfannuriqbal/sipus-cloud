@@ -1,0 +1,98 @@
+/* Bootstrap is loaded via CDN in the layout */
+
+:root {
+    --bs-primary: #17a2b8;
+    --bs-primary-rgb: 23, 162, 184;
+    --corporate-navy: #1a3a52;
+    --corporate-teal: #17a2b8;
+    --corporate-orange: #fd7e14;
+    --corporate-light: #f8f9fa;
+}
+
+body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--corporate-light);
+}
+
+.navbar {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: var(--corporate-navy) !important;
+}
+
+.sidebar {
+    background: linear-gradient(180deg, var(--corporate-navy) 0%, #0f2a3e 100%);
+    min-height: 100vh;
+    position: sticky;
+    top: 0;
+}
+
+.sidebar .nav-link {
+    color: rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+    color: white;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    border-radius: 12px 12px 0 0;
+}
+
+.btn-primary {
+    border-radius: 8px;
+}
+
+.stat-card {
+    border-left: 4px solid var(--corporate-teal);
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(23, 162, 184, 0.15);
+}
+
+.badge {
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+}
+
+.table-responsive {
+    border-radius: 8px;
+}
+
+.form-control,
+.form-select {
+    border-radius: 8px;
+    border-color: #dee2e6;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--corporate-teal);
+    box-shadow: 0 0 0 0.2rem rgba(23, 162, 184, 0.25);
+}
+
+.btn-primary {
+    background-color: var(--corporate-teal);
+    border-color: var(--corporate-teal);
+}
+
+.btn-primary:hover {
+    background-color: #148496;
+    border-color: #148496;
+}
