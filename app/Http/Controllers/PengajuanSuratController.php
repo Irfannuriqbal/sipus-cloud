@@ -42,13 +42,15 @@ class PengajuanSuratController extends Controller
     {
         $validated = $request->validated();
 
-        // Handle file uploads
+        // Upload file ke S3
         if ($request->hasFile('file_ktp')) {
-            $validated['file_ktp'] = $request->file('file_ktp')->store('pengajuan/ktp', 'public');
+            $validated['file_ktp'] = $request->file('file_ktp')
+                ->store('pengajuan/ktp', 's3');
         }
 
         if ($request->hasFile('file_kk')) {
-            $validated['file_kk'] = $request->file('file_kk')->store('pengajuan/kk', 'public');
+            $validated['file_kk'] = $request->file('file_kk')
+                ->store('pengajuan/kk', 's3');
         }
 
         $validated['user_id'] = $request->user()->id;
@@ -88,12 +90,16 @@ class PengajuanSuratController extends Controller
     {
         $validated = $request->validated();
 
-        // Handle file upload for surat
+        // Upload file surat ke S3
         if ($request->hasFile('file_surat')) {
+
+            // Hapus file lama
             if ($pengajuanSurat->file_surat) {
-                Storage::disk('public')->delete($pengajuanSurat->file_surat);
+                Storage::disk('s3')->delete($pengajuanSurat->file_surat);
             }
-            $validated['file_surat'] = $request->file('file_surat')->store('pengajuan/surat', 'public');
+
+            $validated['file_surat'] = $request->file('file_surat')
+                ->store('pengajuan/surat', 's3');
         }
 
         $pengajuanSurat->update($validated);
@@ -107,15 +113,17 @@ class PengajuanSuratController extends Controller
      */
     public function destroy(PengajuanSurat $pengajuanSurat): RedirectResponse
     {
-        // Delete files
+        // Hapus file di S3
         if ($pengajuanSurat->file_ktp) {
-            Storage::disk('public')->delete($pengajuanSurat->file_ktp);
+            Storage::disk('s3')->delete($pengajuanSurat->file_ktp);
         }
+
         if ($pengajuanSurat->file_kk) {
-            Storage::disk('public')->delete($pengajuanSurat->file_kk);
+            Storage::disk('s3')->delete($pengajuanSurat->file_kk);
         }
+
         if ($pengajuanSurat->file_surat) {
-            Storage::disk('public')->delete($pengajuanSurat->file_surat);
+            Storage::disk('s3')->delete($pengajuanSurat->file_surat);
         }
 
         $pengajuanSurat->delete();
@@ -164,13 +172,13 @@ class PengajuanSuratController extends Controller
     public function downloadSurat(PengajuanSurat $pengajuanSurat)
     {
         if (!$pengajuanSurat->file_surat) {
-            return redirect()->back()->with('error', 'File surat belum tersedia.');
+            return redirect()->back()
+                ->with('error', 'File surat belum tersedia.');
         }
 
         $this->authorizeUserAccess($pengajuanSurat);
 
-        /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
-        $disk = Storage::disk('public');
+        $disk = Storage::disk('s3');
 
         return $disk->download($pengajuanSurat->file_surat);
     }
