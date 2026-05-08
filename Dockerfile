@@ -8,6 +8,7 @@ WORKDIR /app
 # Install system dependencies + Node.js
 RUN apt-get update && apt-get install -y \
     build-essential \
+    pkg-config \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
@@ -68,6 +69,8 @@ WORKDIR /var/www/html
 RUN apt-get update && apt-get install -y \
     nginx \
     supervisor \
+    build-essential \
+    pkg-config \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
@@ -96,7 +99,7 @@ COPY --from=builder /app /var/www/html
 RUN chown -R www-data:www-data /var/www/html/storage
 RUN chown -R www-data:www-data /var/www/html/bootstrap/cache
 
-# IMPORTANT: Refresh Laravel config cache
+# Refresh Laravel config cache
 RUN php artisan config:clear
 RUN php artisan cache:clear
 RUN php artisan config:cache
