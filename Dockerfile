@@ -96,6 +96,11 @@ COPY --from=builder /app /var/www/html
 RUN chown -R www-data:www-data /var/www/html/storage
 RUN chown -R www-data:www-data /var/www/html/bootstrap/cache
 
+# IMPORTANT: Refresh Laravel config cache
+RUN php artisan config:clear
+RUN php artisan cache:clear
+RUN php artisan config:cache
+
 # Expose port
 EXPOSE 80
 
