@@ -10,6 +10,7 @@ env:
   ECR_REPOSITORY: sipus-app
   ECS_SERVICE: sipus-service
   ECS_CLUSTER: sipus-cluster
+  ECS_TASK_DEFINITION: sipus-task
 
 jobs:
   deploy:
