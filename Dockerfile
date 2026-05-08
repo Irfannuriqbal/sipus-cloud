@@ -104,6 +104,11 @@ RUN php artisan config:clear || true
 RUN php artisan view:clear || true
 RUN php artisan route:clear || true
 
+# REMOVE OLD CACHE
+RUN rm -f bootstrap/cache/config.php
+RUN rm -f bootstrap/cache/packages.php
+RUN rm -f bootstrap/cache/services.php
+
 # Expose port
 EXPOSE 80
 
