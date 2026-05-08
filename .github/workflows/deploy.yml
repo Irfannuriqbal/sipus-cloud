@@ -10,7 +10,6 @@ env:
   ECR_REPOSITORY: sipus-app
   ECS_SERVICE: sipus-service
   ECS_CLUSTER: sipus-cluster
-  ECS_TASK_DEFINITION: sipus-task
 
 jobs:
   deploy:
@@ -33,7 +32,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t $ECR_REPOSITORY .
+          docker build --no-cache -t $ECR_REPOSITORY .
 
       - name: Tag Docker image
         run: |
